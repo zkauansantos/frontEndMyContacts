@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
  Container, Header, ListContainer, Card,
 } from './styles';
@@ -10,7 +11,7 @@ export default function ContactsList() {
       <Container>
         <Header>
           <strong> 3 contatos </strong>
-          <a href="/"> Novo Contato </a>
+          <Link to="/new"> Novo Contato </Link>
         </Header>
 
         <ListContainer>
@@ -32,10 +33,47 @@ export default function ContactsList() {
             </div>
 
             <div className="actions">
-              <a href="/">
-                <img src={edit} alt="edit" />
-              </a>
+              <Link to="/edit/123">
+                <img style={{ marginTop: 3 }} src={edit} alt="edit" />
+              </Link>
+              <button type="button">
+                <img src={trash} alt="delete" />
+              </button>
+            </div>
+          </Card>
+          <Card>
+            <div className="info">
+              <div className="contact-name">
+                <strong> Kauan Santos </strong>
+                <small> instagram </small>
+              </div>
+              <span>kauan@devaca.com.br</span>
+              <span>(61) 99999-9999</span>
+            </div>
 
+            <div className="actions">
+              <Link to="/edit/123">
+                <img style={{ marginTop: 3 }} src={edit} alt="edit" />
+              </Link>
+              <button type="button">
+                <img src={trash} alt="delete" />
+              </button>
+            </div>
+          </Card>
+          <Card>
+            <div className="info">
+              <div className="contact-name">
+                <strong> Kauan Santos </strong>
+                <small> instagram </small>
+              </div>
+              <span>kauan@devaca.com.br</span>
+              <span>(61) 99999-9999</span>
+            </div>
+
+            <div className="actions">
+              <Link to="/edit/123">
+                <img style={{ marginTop: 3 }} src={edit} alt="edit" />
+              </Link>
               <button type="button">
                 <img src={trash} alt="delete" />
               </button>
