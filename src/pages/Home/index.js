@@ -9,13 +9,12 @@ import {
 import arrow from '../../assets/imgs/icons/arrow.svg';
 import edit from '../../assets/imgs/icons/edit.svg';
 import trash from '../../assets/imgs/icons/trash.svg';
-import Loader from '../../components/Loader';
+// import Loader from '../../components/Loader';
 // import Modal from '../../components/Modal';
 
 export default function Home() {
   return (
     <Container>
-      <Loader />
       <InputSearchContainer>
         <input type="text" placeholder="Pesquisar Contato" />
       </InputSearchContainer>
