@@ -28,6 +28,14 @@ export default function ContactForm({ buttonLabel }) {
       ));
       }
     }
+  function handleNameBlur(event) {
+    if (!event.target.value) {
+      setErrors((prevState) => [
+        ...prevState,
+        { field: 'name', message: 'Nome é obrigatório' },
+      ]);
+    }
+  }
 
   function handleEmailChange(event) {
     setEmail(event.target.value);
@@ -72,6 +80,7 @@ export default function ContactForm({ buttonLabel }) {
           placeholder="Nome"
           value={name}
           onChange={handleNameChange}
+          onBlur={handleNameBlur}
         />
       </FormGroup>
 
