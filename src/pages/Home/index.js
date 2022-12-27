@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
-import delay from '../../utils/delay';
 import arrow from '../../assets/imgs/icons/arrow.svg';
 import edit from '../../assets/imgs/icons/edit.svg';
 import trash from '../../assets/imgs/icons/trash.svg';
 import Loader from '../../components/Loader';
+import ContactsService from '../../services/ContactsService';
 import {
   Container,
   InputSearchContainer,
@@ -30,11 +30,9 @@ export default function Home() {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`http://localhost:3001/contacts?orderBy=${orderBy}`);
-        await delay(500);
+        const contactsList = await ContactsService.listContacts(orderBy);
 
-        const json = await response.json();
-        setContacts(json);
+        setContacts(contactsList);
       } catch (error) {
         console.log('error', error);
       } finally {
@@ -43,8 +41,6 @@ export default function Home() {
     }
 
     loadingContacts();
-
-    return () => console.log('saiu');
   }, [orderBy]);
 
   function handleToggleOrderBy() {
