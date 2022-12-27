@@ -26,21 +26,25 @@ export default function Home() {
      ))), [contacts, searchTerm]);
 
   useEffect(() => {
-    setIsLoading(true);
+    async function loadingContacts() {
+      try {
+        setIsLoading(true);
 
-    fetch(`http://localhost:3001/contacts?orderBy=${orderBy}`)
-    .then(async (response) => {
-      await delay(500);
+        const response = await fetch(`http://localhost:3001/contacts?orderBy=${orderBy}`);
+        await delay(500);
 
-      const json = await response.json();
-      setContacts(json);
-    })
-    .catch((error) => {
-      console.log('error', error);
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
+        const json = await response.json();
+        setContacts(json);
+      } catch (error) {
+        console.log('error', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadingContacts();
+
+    return () => console.log('saiu');
   }, [orderBy]);
 
   function handleToggleOrderBy() {
