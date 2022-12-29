@@ -1,5 +1,10 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState, useMemo } from 'react';
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import arrow from '../../assets/imgs/icons/arrow.svg';
 import edit from '../../assets/imgs/icons/edit.svg';
 import trash from '../../assets/imgs/icons/trash.svg';
@@ -29,23 +34,24 @@ export default function Home() {
       contact.name.toLowerCase().includes(searchTerm.toLowerCase())
      ))), [contacts, searchTerm]);
 
+      const loadContacts = useCallback(async () => {
+        try {
+          setIsLoading(true);
+
+          const contactsList = await ContactsService.listContacts(orderBy);
+
+          setHasError(false);
+          setContacts(contactsList);
+        } catch (error) {
+          setHasError(true);
+        } finally {
+          setIsLoading(false);
+        }
+      }, [orderBy]);
+
   useEffect(() => {
-    async function loadingContacts() {
-      try {
-        setIsLoading(true);
-
-        const contactsList = await ContactsService.listContacts(orderBy);
-
-        setContacts(contactsList);
-      } catch (error) {
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadingContacts();
-  }, [orderBy]);
+    loadContacts();
+  }, [loadContacts]);
 
   function handleToggleOrderBy() {
     setOrderBy((prevState) => (prevState === 'asc' ? 'desc' : 'asc'));
@@ -55,6 +61,9 @@ export default function Home() {
     setSearchTerm(event.target.value);
   }
 
+  function handleTryAgain() {
+    loadContacts();
+  }
   return (
     <Container>
       <Loader isLoading={isLoading} />
@@ -82,14 +91,15 @@ export default function Home() {
         <img src={sad} alt="sad" />
         <div>
           <strong>Ocorreu um erro ao obter os seus contatos</strong>
-          <Button type="button">
+
+          <Button type="button" onClick={handleTryAgain}>
             Tentar Novamente
           </Button>
         </div>
       </ErrorContainer>
     )}
 
-      {filteredContacts.length > 0 && (
+      {!hasError && filteredContacts.length > 0 && (
         <ListHeader order={orderBy}>
           <button
             type="button"
@@ -101,7 +111,7 @@ export default function Home() {
         </ListHeader>
       )}
 
-      {filteredContacts.map((contact) => (
+      {!hasError && filteredContacts.map((contact) => (
         <Card key={contact.id}>
           <div className="info">
             <div className="contact-name">
