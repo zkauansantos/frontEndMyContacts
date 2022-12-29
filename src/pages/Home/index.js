@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable no-nested-ternary */
 import { Link } from 'react-router-dom';
 import {
   useEffect,
@@ -5,12 +7,16 @@ import {
   useMemo,
   useCallback,
 } from 'react';
+
 import arrow from '../../assets/imgs/icons/arrow.svg';
 import edit from '../../assets/imgs/icons/edit.svg';
 import trash from '../../assets/imgs/icons/trash.svg';
+import box from '../../assets/imgs/box.svg';
+import sad from '../../assets/imgs/sad.svg';
+import magnifierQuestion from '../../assets/imgs/magnifier-question.svg';
+
 import Loader from '../../components/Loader';
 import ContactsService from '../../services/ContactsService';
-import sad from '../../assets/imgs/sad.svg';
 import Button from '../../components/Button';
 
 import {
@@ -20,6 +26,8 @@ import {
   ListHeader,
   Card,
   ErrorContainer,
+  BoxListContainer,
+  NoContactFoundList,
 } from './styles';
 
 export default function Home() {
@@ -28,26 +36,24 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-
   const filteredContacts = useMemo(() => (
     contacts.filter((contact) => (
       contact.name.toLowerCase().includes(searchTerm.toLowerCase())
      ))), [contacts, searchTerm]);
+  const loadContacts = useCallback(async () => {
+    try {
+      setIsLoading(true);
 
-      const loadContacts = useCallback(async () => {
-        try {
-          setIsLoading(true);
+      const contactsList = await ContactsService.listContacts(orderBy);
 
-          const contactsList = await ContactsService.listContacts(orderBy);
-
-          setHasError(false);
-          setContacts(contactsList);
-        } catch (error) {
-          setHasError(true);
-        } finally {
-          setIsLoading(false);
-        }
-      }, [orderBy]);
+      setHasError(false);
+      setContacts(contactsList);
+    } catch (error) {
+        setHasError(true);
+    } finally {
+        setIsLoading(false);
+    }
+  }, [orderBy]);
 
   useEffect(() => {
     loadContacts();
@@ -67,17 +73,30 @@ export default function Home() {
   return (
     <Container>
       <Loader isLoading={isLoading} />
-      <InputSearchContainer>
-        <input
-          value={searchTerm}
-          type="text"
-          placeholder="Pesquisar Contato"
-          onChange={handleChangeSearchTerm}
-        />
-      </InputSearchContainer>
 
-      <Header hasError={hasError}>
-        {!hasError && (
+      {(contacts.length > 0 && !hasError) && (
+        <InputSearchContainer>
+          <input
+            value={searchTerm}
+            type="text"
+            placeholder="Pesquisar Contato"
+            onChange={handleChangeSearchTerm}
+          />
+        </InputSearchContainer>
+      )}
+
+      <Header
+        justifyContent={
+          hasError
+            ? 'flex-end'
+            : (
+              contacts.length > 0
+                ? 'space-between'
+                : 'center'
+              )
+        }
+      >
+        {(!hasError && contacts.length > 0) && (
           <strong>
             {filteredContacts.length}
             {filteredContacts.length === 1 ? ' contato' : ' contatos'}
@@ -97,43 +116,66 @@ export default function Home() {
           </Button>
         </div>
       </ErrorContainer>
-    )}
-
-      {!hasError && filteredContacts.length > 0 && (
-        <ListHeader order={orderBy}>
-          <button
-            type="button"
-            onClick={handleToggleOrderBy}
-          >
-            <span>Nome</span>
-            <img src={arrow} alt="arrow" />
-          </button>
-        </ListHeader>
       )}
 
-      {!hasError && filteredContacts.map((contact) => (
-        <Card key={contact.id}>
-          <div className="info">
-            <div className="contact-name">
-              <strong>{contact.name}</strong>
-              {contact.category_name && (
-              <small>{contact.category_name}</small>
-                )}
-            </div>
-            <span>{contact.email}</span>
-            <span>{contact.phone}</span>
-          </div>
+      {!hasError && (
+        <>
+          {(contacts.length < 1 && !isLoading) && (
+            <BoxListContainer>
+              <img src={box} alt="box" />
+              <p>
+                Você ainda não tem nenhum contato cadastrado!
+                Clique no botão <span> "Novo Contato" </span>
+                à cima para cadastrar o seu primeiro!
+              </p>
+            </BoxListContainer>
+          )}
 
-          <div className="actions">
-            <Link to={`/edit/${contact.id}`}>
-              <img style={{ marginTop: 3 }} src={edit} alt="edit" />
-            </Link>
-            <button type="button">
-              <img src={trash} alt="delete" />
-            </button>
-          </div>
-        </Card>
-      ))}
+          {(filteredContacts.length < 1 && !isLoading) && (
+            <NoContactFoundList>
+              <img src={magnifierQuestion} alt="magnifier-question" />
+              <span>Nenhum contato encontrado para <strong>"{searchTerm}"</strong></span>
+            </NoContactFoundList>
+          )}
+
+          {filteredContacts.length > 0 && (
+            <ListHeader order={orderBy}>
+              <button
+                type="button"
+                onClick={handleToggleOrderBy}
+              >
+                <span>Nome</span>
+                <img src={arrow} alt="arrow" />
+              </button>
+            </ListHeader>
+          )}
+
+          {filteredContacts.map((contact) => (
+            <Card key={contact.id}>
+              <div className="info">
+                <div className="contact-name">
+                  <strong>{contact.name}</strong>
+                  {contact.category_name && (
+                  <small>{contact.category_name}</small>
+                )}
+                </div>
+                <span>{contact.email}</span>
+                <span>{contact.phone}</span>
+              </div>
+
+              <div className="actions">
+                <Link to={`/edit/${contact.id}`}>
+                  <img style={{ marginTop: 3 }} src={edit} alt="edit" />
+                </Link>
+                <button type="button">
+                  <img src={trash} alt="delete" />
+                </button>
+              </div>
+            </Card>
+          ))}
+        </>
+      )}
+
     </Container>
   );
 }

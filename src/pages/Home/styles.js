@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   margin-top: 32px;
@@ -26,12 +26,11 @@ export const InputSearchContainer = styled.div`
 export const Header = styled.header`
   display: flex;
   align-items: center;
-  justify-content: ${({ hasError }) => (hasError ? 'flex-end' : 'space-between')};
+  justify-content: ${({ justifyContent }) => justifyContent};
   margin-top: 32px;
   padding: 16px;
-  ${({ hasError, theme }) => hasError && css`
-    border-bottom: 2px solid ${theme.colors.gray[100]};
-  `}
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray[100]};
+
   strong {
     font-size: 24px;
   }
@@ -137,4 +136,35 @@ export const ErrorContainer = styled.div`
     margin-bottom: 8px;
   }
 
+`;
+
+export const BoxListContainer = styled.div`
+  margin-top: 16px;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  p{
+    color: ${({ theme }) => theme.colors.gray[200]};
+    text-align: center;
+    max-width: 85%;
+
+    span {
+      font-weight: bold;
+      color: ${({ theme }) => theme.colors.primary.main};
+    }
+  }
+`;
+
+export const NoContactFoundList = styled.div`
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  span {
+      color: ${({ theme }) => theme.colors.gray[200]};
+      word-break: break-word;
+  }
 `;
