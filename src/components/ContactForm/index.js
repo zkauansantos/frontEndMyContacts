@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
@@ -8,20 +8,34 @@ import { Form, ButtonContainer } from './styles';
 import isEmailValid from '../../utils/isEmailValid';
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
+import CategoriesServices from '../../services/CategoriesServices';
+import Loader from '../Loader';
 
 export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
   const {
     errors,
     setError,
     removeError,
     getErrorMessageByFieldName,
   } = useErrors();
-
   const isFormValid = (name && errors.length === 0);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const categoriesList = await CategoriesServices.listCategories();
+
+        setCategories(categoriesList);
+      } catch {}
+    }
+
+    loadCategories();
+  }, []);
 
   function handleNameChange(event) {
     setName(event.target.value);
@@ -59,66 +73,74 @@ export default function ContactForm({ buttonLabel }) {
     //   name,
     //   email,
     //   phone,
-    //   category,
+    //   categoryId,
     // });
   }
 
   return (
-    <Form onSubmit={handleSubmit} noValidate>
-      <FormGroup
-        error={getErrorMessageByFieldName('name')}
-      >
-        <Input
+    <>
+      <Loader />
+      <Form onSubmit={handleSubmit} noValidate>
+        <FormGroup
           error={getErrorMessageByFieldName('name')}
-          placeholder="Nome*"
-          value={name}
-          onChange={handleNameChange}
-          onBlur={handleNameBlur}
-        />
-      </FormGroup>
+        >
+          <Input
+            error={getErrorMessageByFieldName('name')}
+            placeholder="Nome*"
+            value={name}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+          />
+        </FormGroup>
 
-      <FormGroup
-        error={getErrorMessageByFieldName('email')}
-      >
-        <Input
-          type="email"
+        <FormGroup
           error={getErrorMessageByFieldName('email')}
-          placeholder="E-mail"
-          value={email}
-          onChange={handleEmailChange}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Input
-          placeholder="Telefone"
-          value={phone}
-          onChange={handlePhoneChange}
-          maxLength="15"
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Select
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
         >
-          <option value="">Categoria</option>
-          <option value="Instagram">Instagram </option>
-          <option value="Linkedin"> Discord </option>
-          <option value="Facebook"> Facebook</option>
-        </Select>
-      </FormGroup>
+          <Input
+            type="email"
+            error={getErrorMessageByFieldName('email')}
+            placeholder="E-mail"
+            value={email}
+            onChange={handleEmailChange}
+          />
+        </FormGroup>
 
-      <ButtonContainer>
-        <Button
-          type="submit"
-          disabled={!isFormValid}
-        >
-          {buttonLabel}
-        </Button>
-      </ButtonContainer>
-    </Form>
+        <FormGroup>
+          <Input
+            placeholder="Telefone"
+            value={phone}
+            onChange={handlePhoneChange}
+            maxLength="15"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Select
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+          >
+            <option value="">Categoria</option>
+            {categories.map((category) => (
+              <option
+                key={category.id}
+                value={category.id}
+              >
+                {category.name}
+              </option>
+          ))}
+          </Select>
+        </FormGroup>
+
+        <ButtonContainer>
+          <Button
+            type="submit"
+            disabled={!isFormValid}
+          >
+            {buttonLabel}
+          </Button>
+        </ButtonContainer>
+      </Form>
+    </>
 
   );
 }
