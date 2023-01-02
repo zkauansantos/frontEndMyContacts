@@ -9,7 +9,6 @@ import isEmailValid from '../../utils/isEmailValid';
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
 import CategoriesServices from '../../services/CategoriesServices';
-import Loader from '../Loader';
 
 export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState('');
@@ -17,6 +16,7 @@ export default function ContactForm({ buttonLabel }) {
   const [phone, setPhone] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const {
     errors,
     setError,
@@ -31,7 +31,9 @@ export default function ContactForm({ buttonLabel }) {
         const categoriesList = await CategoriesServices.listCategories();
 
         setCategories(categoriesList);
-      } catch {}
+      } catch {} finally {
+        setIsLoadingCategories(false);
+      }
     }
 
     loadCategories();
@@ -78,69 +80,67 @@ export default function ContactForm({ buttonLabel }) {
   }
 
   return (
-    <>
-      <Loader />
-      <Form onSubmit={handleSubmit} noValidate>
-        <FormGroup
+    <Form onSubmit={handleSubmit} noValidate>
+      <FormGroup
+        error={getErrorMessageByFieldName('name')}
+      >
+        <Input
           error={getErrorMessageByFieldName('name')}
-        >
-          <Input
-            error={getErrorMessageByFieldName('name')}
-            placeholder="Nome*"
-            value={name}
-            onChange={handleNameChange}
-            onBlur={handleNameBlur}
-          />
-        </FormGroup>
+          placeholder="Nome*"
+          value={name}
+          onChange={handleNameChange}
+          onBlur={handleNameBlur}
+        />
+      </FormGroup>
 
-        <FormGroup
+      <FormGroup
+        error={getErrorMessageByFieldName('email')}
+      >
+        <Input
+          type="email"
           error={getErrorMessageByFieldName('email')}
+          placeholder="E-mail"
+          value={email}
+          onChange={handleEmailChange}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <Input
+          placeholder="Telefone"
+          value={phone}
+          onChange={handlePhoneChange}
+          maxLength="15"
+        />
+      </FormGroup>
+
+      <FormGroup isLoading={isLoadingCategories}>
+        <Select
+          value={categoryId}
+          onChange={(event) => setCategoryId(event.target.value)}
+          disabled={isLoadingCategories}
         >
-          <Input
-            type="email"
-            error={getErrorMessageByFieldName('email')}
-            placeholder="E-mail"
-            value={email}
-            onChange={handleEmailChange}
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Input
-            placeholder="Telefone"
-            value={phone}
-            onChange={handlePhoneChange}
-            maxLength="15"
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Select
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-          >
-            <option value="">Categoria</option>
-            {categories.map((category) => (
-              <option
-                key={category.id}
-                value={category.id}
-              >
-                {category.name}
-              </option>
+          <option value="">Categoria</option>
+          {categories.map((category) => (
+            <option
+              key={category.id}
+              value={category.id}
+            >
+              {category.name}
+            </option>
           ))}
-          </Select>
-        </FormGroup>
+        </Select>
+      </FormGroup>
 
-        <ButtonContainer>
-          <Button
-            type="submit"
-            disabled={!isFormValid}
-          >
-            {buttonLabel}
-          </Button>
-        </ButtonContainer>
-      </Form>
-    </>
+      <ButtonContainer>
+        <Button
+          type="submit"
+          disabled={!isFormValid}
+        >
+          {buttonLabel}
+        </Button>
+      </ButtonContainer>
+    </Form>
 
   );
 }
