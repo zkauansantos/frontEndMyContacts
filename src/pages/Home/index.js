@@ -36,10 +36,12 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+
   const filteredContacts = useMemo(() => (
     contacts.filter((contact) => (
       contact.name.toLowerCase().includes(searchTerm.toLowerCase())
      ))), [contacts, searchTerm]);
+
   const loadContacts = useCallback(async () => {
     try {
       setIsLoading(true);
