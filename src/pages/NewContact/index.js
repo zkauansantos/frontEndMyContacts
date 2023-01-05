@@ -25,7 +25,7 @@ export default function CreateContact() {
     } catch (error) {
       toast({
         type: 'danger',
-        text: 'Ocorreu um erro ao cadastrar o contato',
+        text: error.message.includes('e-mail') ? 'Esse e-mail já está cadastrado' : 'Ocorreu um erro ao cadastrar o contato',
       });
     }
   }

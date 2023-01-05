@@ -18,6 +18,7 @@ import magnifierQuestion from '../../assets/imgs/magnifier-question.svg';
 import Loader from '../../components/Loader';
 import ContactsService from '../../services/ContactsService';
 import Button from '../../components/Button';
+import Modal from '../../components/Modal';
 
 import {
   Container,
@@ -36,6 +37,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [contactBeingDeleted, setContactBeingDeleted] = useState(null);
 
   const filteredContacts = useMemo(() => (
     contacts.filter((contact) => (
@@ -72,9 +75,30 @@ export default function Home() {
   function handleTryAgain() {
     loadContacts();
   }
+
+  function handleDeleteContact(contactData) {
+    setIsDeleteModalVisible(true);
+    setContactBeingDeleted(contactData);
+  }
+
+  function handleConfirmDeleteContact() {
+    //
+  }
+
   return (
     <Container>
       <Loader isLoading={isLoading} />
+
+      <Modal
+        visible={isDeleteModalVisible}
+        danger
+        title={`Tem certeza que deseja remover o contato "${contactBeingDeleted?.name}"`}
+        confirmLabel="Deletar"
+        onCancel={() => setIsDeleteModalVisible(false)}
+        onConfirm={() => handleConfirmDeleteContact}
+      >
+        <p>Essa ação não poderá ser desfeita</p>
+      </Modal>
 
       {(contacts.length > 0 && !hasError) && (
         <InputSearchContainer>
@@ -169,7 +193,7 @@ export default function Home() {
                 <Link to={`/edit/${contact.id}`}>
                   <img style={{ marginTop: 3 }} src={edit} alt="edit" />
                 </Link>
-                <button type="button">
+                <button onClick={() => handleDeleteContact(contact)} type="button">
                   <img src={trash} alt="delete" />
                 </button>
               </div>
