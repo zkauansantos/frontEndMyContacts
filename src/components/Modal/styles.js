@@ -45,7 +45,11 @@ export const Container = styled.div`
     border: none;
     font-size: 16px;
     margin-right: 8px;
-    color: ${({ theme }) => theme.colors.gray[200]}
+    color: ${({ theme }) => theme.colors.gray[200]};
+
+    :disabled {
+      cursor: not-allowed;
+    }
   }
 
 
