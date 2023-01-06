@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import Loader from '../../components/Loader';
 import ContactsService from '../../services/ContactsService';
 import toast from '../../utils/toast';
+import useSafeAsyncAction from '../../hooks/useSafeAsyncAction';
 
 export default function EditContact() {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,23 +14,31 @@ export default function EditContact() {
 
   const { id } = useParams();
   const history = useHistory();
+  const safeAsyncAction = useSafeAsyncAction();
 
   useEffect(() => {
     async function loadContact() {
       try {
         const contact = await ContactsService.getContactById(id);
 
-        setContactName(contact.name);
-        contactFormRef.current.setFieldsValues(contact);
-        setIsLoading(false);
+        safeAsyncAction(() => {
+          setContactName(contact.name);
+          contactFormRef.current.setFieldsValues(contact);
+          setIsLoading(false);
+        });
       } catch {
-        history.push('/');
-        toast({ type: 'danger', text: 'Ocorreu um erro ao obter o contato' });
+        safeAsyncAction(() => {
+          history.push('/');
+          toast({
+            type: 'danger',
+            text: 'Ocorreu um erro ao obter o contato',
+          });
+        });
       }
     }
 
     loadContact();
-  }, [id, history]);
+  }, [id, history, safeAsyncAction]);
 
   async function handleSubmit(formData) {
     try {
@@ -53,6 +62,7 @@ export default function EditContact() {
       });
     }
   }
+
   return (
     <>
       <Loader isLoading={isLoading} />
