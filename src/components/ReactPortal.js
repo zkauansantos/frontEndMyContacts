@@ -19,5 +19,5 @@ ReactPortal.propTypes = {
 };
 
 ReactPortal.defaultProps = {
-  nameId: '',
+  nameId: 'portal-root',
 };

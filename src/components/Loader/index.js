@@ -9,7 +9,7 @@ export default function Loader({ isLoading }) {
   }
 
   return (
-    <ReactPortal>
+    <ReactPortal nameId="loader-root">
       <Overlay>
         <Spinner size="72px" />
       </Overlay>

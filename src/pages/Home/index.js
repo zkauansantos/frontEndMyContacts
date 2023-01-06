@@ -187,10 +187,12 @@ export default function Home() {
           )}
 
           {(filteredContacts.length < 1 && !isLoading) && (
-            <NoContactFoundList>
-              <img src={magnifierQuestion} alt="magnifier-question" />
-              <span>Nenhum contato encontrado para <strong>"{searchTerm}"</strong></span>
-            </NoContactFoundList>
+            !contacts.length < 1 && (
+              <NoContactFoundList>
+                <img src={magnifierQuestion} alt="magnifier-question" />
+                <span>Nenhum contato encontrado para <strong>"{searchTerm}"</strong></span>
+              </NoContactFoundList>
+            )
           )}
 
           {filteredContacts.length > 0 && (
