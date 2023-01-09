@@ -12,6 +12,7 @@ export default function CreateContact() {
      await ContactsService.createContact(contact);
 
      contactFormRef.current.resetFields();
+
      toast({
         type: 'success',
         text: 'Contato cadastrado com sucesso',

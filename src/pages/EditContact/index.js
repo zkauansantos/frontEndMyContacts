@@ -45,6 +45,7 @@ export default function EditContact() {
      const updatedContactData = await ContactsService.updateContact(id, contact);
 
      setContactName(updatedContactData.name);
+
      toast({
         type: 'success',
         text: 'Contato editado com sucesso',
