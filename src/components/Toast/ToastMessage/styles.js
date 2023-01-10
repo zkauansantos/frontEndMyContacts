@@ -1,5 +1,26 @@
 /* eslint-disable no-nested-ternary */
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
+
+const messageIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+  opacity: 1;
+  transform: translateY(0px);
+    }
+`;
+const messageOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  to {
+  opacity: 0;
+  transform: translateY(100px);
+    }
+`;
 
 export const Container = styled.div`
   padding: 16px 32px;
@@ -19,6 +40,12 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
+  animation: ${messageIn} 0.2s;
+  ${({ isLeaving }) => isLeaving && css`
+    animation: ${messageOut} 0.2s;
+  `}
+
+
   cursor: pointer;
 
   & + & {

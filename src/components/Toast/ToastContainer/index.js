@@ -5,6 +5,7 @@ import { toastEventManager } from '../../../utils/toast';
 
 export default function ToastContainer() {
   const [messages, setMessages] = useState([]);
+  const [pedingRemovalMessagesIds, setPedingRemovalMessagesIds] = useState([]);
 
   useEffect(() => {
     function handleAddToast({ type, text, duration }) {
@@ -21,7 +22,19 @@ export default function ToastContainer() {
   }, []);
 
   const handleRemoveToast = useCallback((id) => {
-    setMessages((prevState) => prevState.filter((message) => message.id !== id));
+    setPedingRemovalMessagesIds(
+      (prevState) => [...prevState, id],
+    );
+  }, []);
+
+  const handleAnimationEnd = useCallback((id) => {
+    setMessages(
+      (prevState) => prevState.filter((message) => message.id !== id),
+    );
+
+    setPedingRemovalMessagesIds(
+      (prevState) => prevState.filter((messageId) => messageId !== id),
+    );
   }, []);
 
   return (
@@ -31,6 +44,8 @@ export default function ToastContainer() {
           key={message.id}
           message={message}
           onRemoveToast={handleRemoveToast}
+          isLeaving={pedingRemovalMessagesIds.includes(message.id)}
+          onAnimationEnd={handleAnimationEnd}
         />
         ))}
     </Container>
