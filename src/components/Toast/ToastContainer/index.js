@@ -8,7 +8,6 @@ export default function ToastContainer() {
   const {
     setItems: setMessages,
     handleRemoveItem: handleRemoveToast,
-    handleAnimationEnd,
     renderList,
   } = useAnimatedList();
 
@@ -17,9 +16,12 @@ export default function ToastContainer() {
       setMessages((prevState) => [
         ...prevState,
         {
-          id: Math.random(), text, type, duration,
+          id: Math.random(),
+          text,
+          type,
+          duration,
         }]);
-    }
+      }
 
     toastEventManager.on('addtoast', handleAddToast);
 
@@ -28,13 +30,13 @@ export default function ToastContainer() {
 
   return (
     <Container>
-      {renderList((message, { isLeaving }) => (
+      {renderList((message, { isLeaving, animatedRef }) => (
         <ToastMessage
           key={message.id}
           message={message}
           onRemoveToast={handleRemoveToast}
           isLeaving={isLeaving}
-          onAnimationEnd={handleAnimationEnd}
+          animatedElementRef={animatedRef}
         />
     ))}
     </Container>
