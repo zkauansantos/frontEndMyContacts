@@ -42,7 +42,7 @@ export const Container = styled.div`
   gap: 8px;
   animation: ${messageIn} 0.2s;
   ${({ isLeaving }) => isLeaving && css`
-    animation: ${messageOut} 0.2s;
+    animation: ${messageOut} 0.3s;
   `}
 
 
