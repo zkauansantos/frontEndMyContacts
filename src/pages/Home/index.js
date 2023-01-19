@@ -1,7 +1,7 @@
 import Loader from '../../components/Loader';
 import useHome from './useHome';
 
-import { Container } from './styles';
+import { Container, IsPedingSpinnerContainer } from './styles';
 import InputSearch from './components/InputSearch';
 import Header from './components/Header';
 import ErrorStatus from './components/ErrorStatus';
@@ -10,6 +10,7 @@ import SearchNotFound from './components/SearchNotFound';
 import ContactsList from './components/ContactsList';
 
 import Modal from '../../components/Modal';
+import Spinner from '../../components/Spinner';
 
 export default function Home() {
   const {
@@ -28,6 +29,7 @@ export default function Home() {
     handleToggleOrderBy,
     handleTryAgain,
     handleCloseDeleteModal,
+    isPeding,
   } = useHome();
 
   const hasContacts = contacts.length > 0;
@@ -56,6 +58,12 @@ export default function Home() {
       {isSearchEmpty && <SearchNotFound searchTerm={searchTerm} /> }
       {hasContacts && (
         <>
+          {isPeding && (
+            <IsPedingSpinnerContainer>
+              <Spinner size="48px" marginTop="120px" />
+            </IsPedingSpinnerContainer>
+          )}
+
           <ContactsList
             filteredContacts={filteredContacts}
             orderBy={orderBy}

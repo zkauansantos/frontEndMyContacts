@@ -1,7 +1,7 @@
 import {
   useEffect,
   useState,
-  useMemo,
+  useTransition,
   useCallback,
 } from 'react';
 import toast from '../../utils/toast';
@@ -16,11 +16,8 @@ export default function Home() {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [contactBeingDeleted, setContactBeingDeleted] = useState(null);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
-
-  const filteredContacts = useMemo(() => (
-    contacts.filter((contact) => (
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase())
-     ))), [contacts, searchTerm]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [isPeding, startTransition] = useTransition();
 
   const loadContacts = useCallback(async () => {
     try {
@@ -30,6 +27,7 @@ export default function Home() {
 
       setHasError(false);
       setContacts(contactsList);
+      setFilteredContacts(contactsList);
     } catch (error) {
         setHasError(true);
         setContacts([]);
@@ -42,22 +40,30 @@ export default function Home() {
     loadContacts();
   }, [loadContacts]);
 
-  function handleToggleOrderBy() {
+  const handleToggleOrderBy = useCallback(() => {
     setOrderBy((prevState) => (prevState === 'asc' ? 'desc' : 'asc'));
-  }
+  }, []);
 
   function handleChangeSearchTerm(event) {
+    const { value } = event.target;
+
     setSearchTerm(event.target.value);
+
+    startTransition(() => {
+      setFilteredContacts(contacts.filter((contact) => (
+        contact.name.toLowerCase().includes(value.toLowerCase())
+      )));
+    });
   }
 
   function handleTryAgain() {
     loadContacts();
   }
 
-  function handleDeleteContact(contactData) {
+  const handleDeleteContact = useCallback((contactData) => {
     setIsDeleteModalVisible(true);
     setContactBeingDeleted(contactData);
-  }
+  }, []);
 
   function handleCloseDeleteModal() {
     setIsDeleteModalVisible(false);
@@ -89,6 +95,7 @@ export default function Home() {
   }
 
   return {
+    isPeding,
     contacts,
     orderBy,
     searchTerm,

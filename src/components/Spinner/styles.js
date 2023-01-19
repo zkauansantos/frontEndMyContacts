@@ -37,6 +37,7 @@ export const StyledSpinner = styled.div`
   font-size: ${({ size }) => size};
   width: 1em;
   height: 1em;
+  margin-top: ${({ marginTop }) => marginTop};
   border-radius: 50%;
   -webkit-transform: translateZ(0);
   -ms-transform: translateZ(0);

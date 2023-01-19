@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { memo } from 'react';
 import { ListHeader, Card } from './styles';
 import arrow from '../../../../assets/imgs/icons/arrow.svg';
 import edit from '../../../../assets/imgs/icons/edit.svg';
 import trash from '../../../../assets/imgs/icons/trash.svg';
 
-export default function ContactsList({
+ function ContactsList({
   filteredContacts,
   orderBy,
   onToggleOrderBy,
@@ -75,3 +76,5 @@ ContactsList.propTypes = {
 ContactsList.defaultProps = {
   contactBeingDeleted: null,
 };
+
+export default memo(ContactsList);
