@@ -14,16 +14,20 @@ export default function useEditContact() {
   const safeAsyncAction = useSafeAsyncAction();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function loadContact() {
       try {
-        const contact = await ContactsService.getContactById(id);
+        const contact = await ContactsService.getContactById(id, controller.signal);
 
         safeAsyncAction(() => {
           setContactName(contact.name);
           contactFormRef.current.setFieldsValues(contact);
           setIsLoading(false);
         });
-      } catch {
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+
         safeAsyncAction(() => {
           history.push('/');
           toast({
@@ -35,18 +39,22 @@ export default function useEditContact() {
     }
 
     loadContact();
+
+    return () => {
+      controller.abort();
+    };
   }, [id, history, safeAsyncAction]);
 
   async function handleSubmit(contact) {
     try {
-     const updatedContactData = await ContactsService.updateContact(id, contact);
+      const updatedContactData = await ContactsService.updateContact(id, contact);
 
-     setContactName(updatedContactData.name);
+      setContactName(updatedContactData.name);
 
-     toast({
+      toast({
         type: 'success',
         text: 'Contato editado com sucesso',
-       });
+      });
     } catch (error) {
       toast({
         type: 'danger',
